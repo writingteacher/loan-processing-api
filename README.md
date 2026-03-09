@@ -55,17 +55,34 @@ http://localhost:3000
 
 ## Authentication
 
-> **Note:** This is a mock API for portfolio demonstration. Authentication is not enforced, but the structure below reflects real-world API key usage.
+All requests except the root endpoint require an API key 
+in the authorization header.
 
-Production APIs would require an API key in the request header:
-
-```
+​```
 Authorization: Bearer YOUR_API_KEY
-```
+​```
 
-If the API key is missing or invalid, the API returns a `401 Unauthorized` response.
+If the API key is missing or invalid, the API returns 
+a `401 Unauthorized` response:
+
+​```json
+{
+  "error": "unauthorized",
+  "message": "Missing or invalid API key."
+}
+​```
 
 ---
+
+### Test Credentials
+
+Use this key to authenticate all requests:
+
+​```
+Authorization: Bearer test_key_loanapi_2026
+​```
+
+> **Note:** This is a test key for portfolio demonstration purposes only.
 
 ## Endpoints
 

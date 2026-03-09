@@ -5,6 +5,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ─────────────────────────────────────────
+// AUTHENTICATION MIDDLEWARE
+// ─────────────────────────────────────────
+const TEST_API_KEY = "test_key_loanapi_2026";
+
+app.use((req, res, next) => {
+  if (req.path === "/") return next();
+  
+  const authHeader = req.headers["authorization"];
+  if (!authHeader || authHeader !== `Bearer ${TEST_API_KEY}`) {
+    return res.status(401).json({
+      error: "unauthorized",
+      message: "Missing or invalid API key."
+    });
+  }
+  next();
+});
+
 // In-memory data store (mock database)
 const borrowers = [];
 const applications = [];
