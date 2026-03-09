@@ -2,7 +2,7 @@
 
 A mock REST API for a fictional fintech loan processing platform. Built as a technical writing portfolio sample to demonstrate API documentation, endpoint design, and developer experience writing.
 
-> **Live API:** `https://loan-processing-api.onrender.com` ← *(update this after deployment)*
+> **Live API:** `https://loan-processing-api.onrender.com`
 
 ---
 
