@@ -2,7 +2,7 @@
 
 A mock REST API for a fictional fintech loan processing platform. Built as a technical writing portfolio sample to demonstrate API documentation, endpoint design, and developer experience writing.
 
-> **Live API:** `https://loan-processing-api.onrender.com`
+> **Live API:** `https://loan-processing-api.onrender.com` ← *(update this after deployment)*
 
 ---
 
@@ -79,6 +79,12 @@ Check that the API is running.
 GET /
 ```
 
+**cURL Example**
+
+```bash
+curl https://loan-processing-api.onrender.com/
+```
+
 **Response Example**
 
 ```json
@@ -106,6 +112,14 @@ POST /v1/borrowers
 | `first_name` | string | ✅ Yes   | Borrower's first name    |
 | `last_name`  | string | ✅ Yes   | Borrower's last name     |
 | `email`      | string | ✅ Yes   | Borrower's email address |
+
+**cURL Example**
+
+```bash
+curl -X POST https://loan-processing-api.onrender.com/v1/borrowers \
+  -H "Content-Type: application/json" \
+  -d '{"first_name": "Jane", "last_name": "Smith", "email": "jane@example.com"}'
+```
 
 **Request Example**
 
@@ -138,6 +152,12 @@ Returns a list of all borrower profiles.
 
 ```
 GET /v1/borrowers
+```
+
+**cURL Example**
+
+```bash
+curl https://loan-processing-api.onrender.com/v1/borrowers
 ```
 
 **Response Example**
@@ -174,6 +194,12 @@ GET /v1/borrowers/:id
 |---------------|--------------------------------------|
 | `id`          | The `borrower_id` returned on creation |
 
+**cURL Example**
+
+```bash
+curl https://loan-processing-api.onrender.com/v1/borrowers/br_78234
+```
+
 **Response Example**
 
 ```json
@@ -204,6 +230,14 @@ POST /v1/loan-applications
 | `borrower_id`    | string | ✅ Yes   | ID of an existing borrower         |
 | `loan_amount`    | number | ✅ Yes   | Requested loan amount in USD       |
 | `property_value` | number | ✅ Yes   | Estimated property value in USD    |
+
+**cURL Example**
+
+```bash
+curl -X POST https://loan-processing-api.onrender.com/v1/loan-applications \
+  -H "Content-Type: application/json" \
+  -d '{"borrower_id": "br_78234", "loan_amount": 350000, "property_value": 420000}'
+```
 
 **Request Example**
 
@@ -236,6 +270,12 @@ Returns a list of all submitted loan applications.
 
 ```
 GET /v1/loan-applications
+```
+
+**cURL Example**
+
+```bash
+curl https://loan-processing-api.onrender.com/v1/loan-applications
 ```
 
 **Response Example**
