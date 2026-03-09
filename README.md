@@ -2,7 +2,9 @@
 
 A mock REST API for a fictional fintech loan processing platform. Built as a technical writing portfolio sample to demonstrate API documentation, endpoint design, and developer experience writing.
 
-> **Live API:** `https://loan-processing-api.onrender.com` ← *(update this after deployment)*
+> **Live API:** `https://loan-processing-api.onrender.com`
+>
+> **Test API Key:** `Bearer test_key_loanapi_2026`
 
 ---
 
@@ -55,22 +57,20 @@ http://localhost:3000
 
 ## Authentication
 
-All requests except the root endpoint require an API key 
-in the authorization header.
+All requests except the root endpoint require a valid API key in the authorization header.
 
-​```
+```
 Authorization: Bearer YOUR_API_KEY
-​```
+```
 
-If the API key is missing or invalid, the API returns 
-a `401 Unauthorized` response:
+If the API key is missing or invalid, the API returns a `401 Unauthorized` response:
 
-​```json
+```json
 {
   "error": "unauthorized",
   "message": "Missing or invalid API key."
 }
-​```
+```
 
 ---
 
@@ -78,11 +78,13 @@ a `401 Unauthorized` response:
 
 Use this key to authenticate all requests:
 
-​```
+```
 Authorization: Bearer test_key_loanapi_2026
-​```
+```
 
 > **Note:** This is a test key for portfolio demonstration purposes only.
+
+---
 
 ## Endpoints
 
@@ -99,7 +101,7 @@ GET /
 **cURL Example**
 
 ```bash
-curl https://loan-processing-api.onrender.com/
+curl https://loan-processing-api.onrender.com/ 
 ```
 
 **Response Example**
@@ -135,6 +137,7 @@ POST /v1/borrowers
 ```bash
 curl -X POST https://loan-processing-api.onrender.com/v1/borrowers \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer test_key_loanapi_2026" \
   -d '{"first_name": "Jane", "last_name": "Smith", "email": "jane@example.com"}'
 ```
 
@@ -174,7 +177,8 @@ GET /v1/borrowers
 **cURL Example**
 
 ```bash
-curl https://loan-processing-api.onrender.com/v1/borrowers
+curl https://loan-processing-api.onrender.com/v1/borrowers \
+  -H "Authorization: Bearer test_key_loanapi_2026"
 ```
 
 **Response Example**
@@ -214,7 +218,8 @@ GET /v1/borrowers/:id
 **cURL Example**
 
 ```bash
-curl https://loan-processing-api.onrender.com/v1/borrowers/br_78234
+curl https://loan-processing-api.onrender.com/v1/borrowers/br_78234 \
+  -H "Authorization: Bearer test_key_loanapi_2026"
 ```
 
 **Response Example**
@@ -253,6 +258,7 @@ POST /v1/loan-applications
 ```bash
 curl -X POST https://loan-processing-api.onrender.com/v1/loan-applications \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer test_key_loanapi_2026" \
   -d '{"borrower_id": "br_78234", "loan_amount": 350000, "property_value": 420000}'
 ```
 
@@ -292,7 +298,8 @@ GET /v1/loan-applications
 **cURL Example**
 
 ```bash
-curl https://loan-processing-api.onrender.com/v1/loan-applications
+curl https://loan-processing-api.onrender.com/v1/loan-applications \
+  -H "Authorization: Bearer test_key_loanapi_2026"
 ```
 
 **Response Example**
@@ -390,13 +397,29 @@ GET /v1/loan-applications/app_90821
 
 ## Testing the API
 
-You can test all endpoints without installing anything using **Hoppscotch** (free, browser-based):
+You can test all endpoints using **Postman** or **Hoppscotch** (free, browser-based).
+
+### Using Postman
+
+1. Set the request method (GET or POST)
+2. Enter the endpoint URL
+3. Click the **Headers** tab and add:
+
+| Key | Value |
+|---|---|
+| `Authorization` | `Bearer test_key_loanapi_2026` |
+
+4. For POST requests, click **Body** → **raw** → **JSON** and add the request body
+5. Click **Send**
+
+### Using Hoppscotch (browser-based, no install needed)
 
 1. Go to [hoppscotch.io](https://hoppscotch.io)
-2. Set the method (GET or POST)
-3. Enter the endpoint URL
-4. For POST requests, add the request body as JSON
-5. Click **Send**
+2. Set the method and URL
+3. Add the `Authorization` header with the test key
+4. Click **Send**
+
+> **Note:** This API is hosted on Render's free tier. The first request after a period of inactivity may take 30-60 seconds while the server wakes up. Subsequent requests will be fast.
 
 ---
 
