@@ -27,6 +27,7 @@ A mock REST API for a fictional fintech loan processing platform. Built as a tec
 - [Error Handling](#error-handling)
 - [Workflow Example](#workflow-example)
 - [Testing the API](#testing-the-api)
+- [Rate Limiting](#rate-limiting)
 - [Glossary](#glossary)
 - [About This Project](#about-this-project)
 - [Changelog](CHANGELOG.md)
@@ -487,12 +488,13 @@ All errors return a consistent JSON structure:
 
 **Common Error Codes**
 
-| Status Code | Error Code        | Meaning                       |
-|-------------|-------------------|-------------------------------|
-| `400`       | `invalid_request` | Missing or invalid parameters |
-| `401`       | `unauthorized`    | Missing or invalid API key    |
-| `404`       | `not_found`       | Resource not found            |
-| `500`       | `server_error`    | Internal server error         |
+| Status Code | Error Code        | Meaning                       |                      |
+|-------------|----------------------|-------------------------------|
+| `400`       | `invalid_request`    | Missing or invalid parameters |
+| `401`       | `unauthorized`       | Missing or invalid API key    |
+| `404`       | `not_found`          | Resource not found            |
+| `429`       | `rate_limit_exceeded`| Too many requests             |
+| `500`       | `server_error`       | Internal server error         |
 
 ---
 
@@ -655,6 +657,63 @@ You can test all endpoints using **Postman** or **Hoppscotch** (free, browser-ba
 4. Click **Send**
 
 > **Note:** This API is hosted on Render's free tier. The first request after a period of inactivity may take 30-60 seconds while the server wakes up. Subsequent requests will be fast.
+
+---
+## Rate Limiting
+
+The Loan Processing API limits the number of requests 
+you can make in a given time period to ensure stability 
+and fair usage across all integrations.
+
+**Default Limits**
+
+| Plan  | Requests per minute | Requests per day |
+|-------|--------------------|--------------------|
+| Free  | 30                 | 1,000              |
+| Pro   | 100                | 10,000             |
+
+> **Note:** This is a portfolio demonstration API. Rate 
+> limiting is documented here to reflect real-world API 
+> design but is not enforced in the current version.
+
+---
+
+### Rate Limit Headers
+
+Every API response includes headers that show your 
+current usage:
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Maximum requests allowed per minute |
+| `X-RateLimit-Remaining` | Requests remaining in current window |
+| `X-RateLimit-Reset` | Unix timestamp when the limit resets |
+
+---
+
+### Exceeded Rate Limit
+
+If you exceed the rate limit the API returns a 
+`429 Too Many Requests` response:
+```json
+{
+  "error": "rate_limit_exceeded",
+  "message": "Too many requests. Please wait before retrying.",
+  "retry_after": 60
+}
+```
+
+The `retry_after` field tells you how many seconds 
+to wait before making another request.
+
+---
+
+### Best Practices
+
+- Cache responses where possible to reduce API calls
+- Implement exponential backoff when retrying failed requests
+- Monitor your `X-RateLimit-Remaining` header to avoid hitting limits
+- Contact support to upgrade your plan if you need higher limits
 
 ---
 
