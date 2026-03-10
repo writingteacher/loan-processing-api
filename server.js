@@ -137,6 +137,85 @@ app.get("/v1/loan-applications/:id", (req, res) => {
 });
 
 // ─────────────────────────────────────────
+// DOCUMENTS
+// ─────────────────────────────────────────
+const documents = [];
+
+// Upload a document
+app.post("/v1/documents", (req, res) => {
+  const { borrower_id, document_type, file_name } = req.body;
+
+  if (!borrower_id || !document_type || !file_name) {
+    return res.status(400).json({
+      error: "invalid_request",
+      message: "borrower_id, document_type, and file_name are required."
+    });
+  }
+
+  const borrower = borrowers.find(b => b.borrower_id === borrower_id);
+  if (!borrower) {
+    return res.status(404).json({
+      error: "not_found",
+      message: "Borrower not found."
+    });
+  }
+
+  const document = {
+    document_id: "doc_" + Math.floor(Math.random() * 90000 + 10000),
+    borrower_id,
+    document_type,
+    file_name,
+    status: "received",
+    uploaded_at: new Date().toISOString()
+  };
+
+  documents.push(document);
+  res.status(201).json(document);
+});
+
+// Get all documents for a borrower
+app.get("/v1/documents", (req, res) => {
+  const { borrower_id } = req.query;
+  if (!borrower_id) {
+    return res.status(400).json({
+      error: "invalid_request",
+      message: "borrower_id query parameter is required."
+    });
+  }
+  const borrowerDocs = documents.filter(d => d.borrower_id === borrower_id);
+  res.json({ documents: borrowerDocs, total: borrowerDocs.length });
+});
+
+// ─────────────────────────────────────────
+// LOAN STATUS
+// ─────────────────────────────────────────
+
+// Update loan application status
+app.patch("/v1/loan-applications/:id/status", (req, res) => {
+  const { status } = req.body;
+  const validStatuses = ["submitted", "under_review", "approved", "rejected"];
+
+  if (!status || !validStatuses.includes(status)) {
+    return res.status(400).json({
+      error: "invalid_request",
+      message: "status must be one of: submitted, under_review, approved, rejected."
+    });
+  }
+
+  const application = applications.find(a => a.application_id === req.params.id);
+  if (!application) {
+    return res.status(404).json({
+      error: "not_found",
+      message: "Application not found."
+    });
+  }
+
+  application.status = status;
+  application.updated_at = new Date().toISOString();
+  res.json(application);
+});
+
+// ─────────────────────────────────────────
 // START SERVER
 // ─────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
