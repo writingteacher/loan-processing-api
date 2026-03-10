@@ -197,8 +197,7 @@ Status: 201 Created
   "last_name": "Smith",
   "email": "jane@example.com",
   "status": "created",
-  "created_at": "2026-03-09T10:00:00.000Z
-ter Document"
+  "created_at": "2026-03-09T10:00:00.000Z"
 }
 ```
 
@@ -234,8 +233,7 @@ Status: 200 OK
       "last_name": "Smith",
       "email": "jane@example.com",
       "status": "created",
-      "created_at": "2026-03-09T10:00:00.000Z
-ter Document"
+      "created_at": "2026-03-09T10:00:00.000Z"
     }
   ],
   "total": 1
