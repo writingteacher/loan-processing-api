@@ -29,6 +29,7 @@ A mock REST API for a fictional fintech loan processing platform. Built as a tec
 - [Testing the API](#testing-the-api)
 - [Glossary](#glossary)
 - [About This Project](#about-this-project)
+- [Changelog](CHANGELOG.md)
 
 ---
 
