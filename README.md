@@ -22,7 +22,7 @@ A mock REST API for a fictional fintech loan processing platform. Built as a tec
   - [Get Single Borrower](#get-single-borrower)
   - [Submit Loan Application](#submit-loan-application)
   - [Get All Loan Applications](#get-all-loan-applications)
-  - [Upload Document](#upload-document)
+  - [Register Document](#upload-document)
   - [Get Documents](#get-documents)
   - [Update Loan Status](#update-loan-status)
 - [Error Handling](#error-handling)
@@ -197,7 +197,8 @@ Status: 201 Created
   "last_name": "Smith",
   "email": "jane@example.com",
   "status": "created",
-  "created_at": "2026-03-09T10:00:00Z"
+  "created_at": "2026-03-09T10:00:00.000Z
+ter Document"
 }
 ```
 
@@ -233,7 +234,8 @@ Status: 200 OK
       "last_name": "Smith",
       "email": "jane@example.com",
       "status": "created",
-      "created_at": "2026-03-09T10:00:00Z"
+      "created_at": "2026-03-09T10:00:00.000Z
+ter Document"
     }
   ],
   "total": 1
@@ -276,7 +278,7 @@ Status: 200 OK
   "last_name": "Smith",
   "email": "jane@example.com",
   "status": "created",
-  "created_at": "2026-03-09T10:00:00Z"
+  "created_at": "2026-03-09T10:00:00.000Z"
 }
 ```
 
@@ -330,7 +332,7 @@ Status: 201 Created
   "loan_amount": 350000,
   "property_value": 420000,
   "status": "submitted",
-  "submitted_at": "2026-03-09T10:05:00Z"
+  "submitted_at": "2026-03-09T10:05:00.000Z"
 }
 ```
 
@@ -366,7 +368,7 @@ Status: 200 OK
       "loan_amount": 350000,
       "property_value": 420000,
       "status": "submitted",
-      "submitted_at": "2026-03-09T10:05:00Z"
+      "submitted_at": "2026-03-09T10:05:00.000Z"
     }
   ],
   "total": 1
@@ -375,9 +377,10 @@ Status: 200 OK
 
 ---
 
-### Upload Document
+### Register Document
 
-Uploads a supporting document linked to an existing borrower.
+Registers a document record linked to an existing borrower. 
+Note: This endpoint records document metadata only. File upload via multipart/form-data is not supported in v1.
 
 ```
 POST /v1/documents
@@ -494,6 +497,22 @@ PATCH /v1/loan-applications/:id/status
 |----------|--------|----------|-------------|-------------|
 | `status` | string | ✅ Yes   | Must be one of the accepted values | Accepted values: `submitted`, `under_review`, `approved`, `rejected` |
 
+**Allowed Status Transitions**
+
+Not all status changes are permitted. The following table 
+defines the valid transitions:
+
+| Current Status | Allowed Next Status |
+|----------------|---------------------|
+| `submitted`    | `under_review`, `rejected` |
+| `under_review` | `approved`, `rejected` |
+| `approved`     | No further transitions allowed |
+| `rejected`     | No further transitions allowed |
+
+> **Note:** A loan cannot move backwards in the workflow. 
+> For example, a `rejected` application cannot be moved 
+> back to `under_review`. A new application must be submitted.
+
 **cURL Example**
 
 ```bash
@@ -524,7 +543,7 @@ Status: 200 OK
   "loan_amount": 350000,
   "property_value": 420000,
   "status": "approved",
-  "submitted_at": "2026-03-10T10:31:55.609Z",
+  "submitted_at": "2026-03-09T10:05:00.000Z",
   "updated_at": "2026-03-10T10:33:01.974Z"
 }
 ```
@@ -797,7 +816,8 @@ You can test all endpoints using **Postman** or **Hoppscotch** (free, browser-ba
 | **REST** | Representational State Transfer. An architectural style for APIs that uses standard HTTP methods like GET, POST, PATCH, and DELETE. |
 | **JSON** | JavaScript Object Notation. A lightweight data format used to send and receive data in REST APIs. |
 | **Bearer Token** | A type of API authentication where a token is included in the request header to verify the caller's identity. |
-| **ISO 8601** | An international standard for representing dates and times. All timestamps in this API use this format, for example: `2026-03-09T10:00:00Z`. The `Z` indicates UTC timezone. |
+| **ISO 8601** | An international standard for representing dates and times. All timestamps in this API use this format, for example: `2026-03-09T10:00:00.000Z
+ter Document`. The `Z` indicates UTC timezone. |
 | **HTTP Status Code** | A three-digit code returned by an API to indicate the result of a request. Common codes include `200` (success), `400` (bad request), `401` (unauthorized), `404` (not found), and `500` (server error). |
 | **Query Parameter** | A key-value pair appended to a URL to filter or modify a request. For example: `/v1/documents?borrower_id=br_78234`. |
 | **Path Parameter** | A variable segment in a URL that identifies a specific resource. For example: `/v1/borrowers/:id` where `:id` is the path parameter. |
