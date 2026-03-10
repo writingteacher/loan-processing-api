@@ -535,6 +535,19 @@ Returned when the requested resource does not exist.
 
 ---
 
+**429 — Too Many Requests**
+
+Returned when you exceed the API rate limit.
+```json
+{
+  "error": "rate_limit_exceeded",
+  "message": "Too many requests. Please wait before retrying.",
+  "retry_after": 60
+}
+```
+
+> See the [Rate Limiting](#rate-limiting) section for limits and best practices.
+
 **500 — Server Error**
 
 Returned when an unexpected error occurs on the server.
