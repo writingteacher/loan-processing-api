@@ -488,15 +488,13 @@ All errors return a consistent JSON structure:
 
 **Common Error Codes**
 
-| Status Code | Error Code        | Meaning                       |                      |
-|-------------|----------------------|-------------------------------|
-| `400`       | `invalid_request`    | Missing or invalid parameters |
-| `401`       | `unauthorized`       | Missing or invalid API key    |
-| `404`       | `not_found`          | Resource not found            |
-| `429`       | `rate_limit_exceeded`| Too many requests             |
-| `500`       | `server_error`       | Internal server error         |
-
----
+| Status Code | Error Code             | Meaning                       |
+|-------------|------------------------|-------------------------------|
+| `400`       | `invalid_request`      | Missing or invalid parameters |
+| `401`       | `unauthorized`         | Missing or invalid API key    |
+| `404`       | `not_found`            | Resource not found            |
+| `429`       | `rate_limit_exceeded`  | Too many requests             |
+| `500`       | `server_error`         | Internal server error         |
 
 **400 — Invalid Request**
 
