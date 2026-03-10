@@ -10,6 +10,7 @@ A mock REST API for a fictional fintech loan processing platform. Built as a tec
 
 ## Table of Contents
 
+- [Getting Started](GETTING_STARTED.md)
 - [Overview](#overview)
 - [Base URL](#base-url)
 - [Authentication](#authentication)
