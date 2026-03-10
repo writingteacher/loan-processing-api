@@ -14,6 +14,7 @@ A mock REST API for a fictional fintech loan processing platform. Built as a tec
 - [Overview](#overview)
 - [Base URL](#base-url)
 - [Authentication](#authentication)
+- [Versioning](#versioning)
 - [Endpoints](#endpoints)
   - [Root](#root)
   - [Create Borrower](#create-borrower)
@@ -25,12 +26,12 @@ A mock REST API for a fictional fintech loan processing platform. Built as a tec
   - [Get Documents](#get-documents)
   - [Update Loan Status](#update-loan-status)
 - [Error Handling](#error-handling)
+- [Rate Limiting](#rate-limiting)
 - [Workflow Example](#workflow-example)
 - [Testing the API](#testing-the-api)
-- [Rate Limiting](#rate-limiting)
 - [Glossary](#glossary)
+- [Support](#support)
 - [About This Project](#about-this-project)
-- [Changelog](CHANGELOG.md)
 
 ---
 
@@ -95,6 +96,25 @@ Authorization: Bearer test_key_loanapi_2026
 
 ---
 
+## Versioning
+
+The Loan Processing API uses URL-based versioning. The current version is `v1`.
+
+```
+https://loan-processing-api.onrender.com/v1/
+```
+
+**How versioning works:**
+
+- All endpoints are prefixed with the version number — for example `/v1/borrowers`
+- When breaking changes are introduced a new version is released — for example `/v2/borrowers`
+- Previous versions remain available for a deprecation period to give integrations time to migrate
+- Non-breaking changes such as new fields or new endpoints are added to the current version without a version bump
+
+**Current version:** `v1`
+
+---
+
 ## Endpoints
 
 ---
@@ -114,6 +134,10 @@ curl https://loan-processing-api.onrender.com/
 ```
 
 **Response Example**
+
+```
+Status: 200 OK
+```
 
 ```json
 {
@@ -135,11 +159,11 @@ POST /v1/borrowers
 
 **Request Body**
 
-| Field        | Type   | Required | Description              |
-|--------------|--------|----------|--------------------------|
-| `first_name` | string | ✅ Yes   | Borrower's first name    |
-| `last_name`  | string | ✅ Yes   | Borrower's last name     |
-| `email`      | string | ✅ Yes   | Borrower's email address |
+| Field        | Type   | Required | Constraints | Description              |
+|--------------|--------|----------|-------------|--------------------------|
+| `first_name` | string | ✅ Yes   | Max 50 chars | Borrower's first name   |
+| `last_name`  | string | ✅ Yes   | Max 50 chars | Borrower's last name    |
+| `email`      | string | ✅ Yes   | Valid email format, max 100 chars | Borrower's email address |
 
 **cURL Example**
 
@@ -161,6 +185,10 @@ curl -X POST https://loan-processing-api.onrender.com/v1/borrowers \
 ```
 
 **Response Example**
+
+```
+Status: 201 Created
+```
 
 ```json
 {
@@ -191,6 +219,10 @@ curl https://loan-processing-api.onrender.com/v1/borrowers \
 ```
 
 **Response Example**
+
+```
+Status: 200 OK
+```
 
 ```json
 {
@@ -233,6 +265,10 @@ curl https://loan-processing-api.onrender.com/v1/borrowers/br_78234 \
 
 **Response Example**
 
+```
+Status: 200 OK
+```
+
 ```json
 {
   "borrower_id": "br_78234",
@@ -256,11 +292,11 @@ POST /v1/loan-applications
 
 **Request Body**
 
-| Field            | Type   | Required | Description                     |
-|------------------|--------|----------|---------------------------------|
-| `borrower_id`    | string | ✅ Yes   | ID of an existing borrower      |
-| `loan_amount`    | number | ✅ Yes   | Requested loan amount in USD    |
-| `property_value` | number | ✅ Yes   | Estimated property value in USD |
+| Field            | Type   | Required | Constraints | Description                     |
+|------------------|--------|----------|-------------|---------------------------------|
+| `borrower_id`    | string | ✅ Yes   | Must be a valid existing borrower ID | ID of an existing borrower |
+| `loan_amount`    | number | ✅ Yes   | Min: 1,000 — Max: 10,000,000 | Requested loan amount in USD |
+| `property_value` | number | ✅ Yes   | Min: 1,000 — Max: 50,000,000 | Estimated property value in USD |
 
 **cURL Example**
 
@@ -282,6 +318,10 @@ curl -X POST https://loan-processing-api.onrender.com/v1/loan-applications \
 ```
 
 **Response Example**
+
+```
+Status: 201 Created
+```
 
 ```json
 {
@@ -313,6 +353,10 @@ curl https://loan-processing-api.onrender.com/v1/loan-applications \
 
 **Response Example**
 
+```
+Status: 200 OK
+```
+
 ```json
 {
   "applications": [
@@ -341,11 +385,11 @@ POST /v1/documents
 
 **Request Body**
 
-| Field           | Type   | Required | Description |
-|-----------------|--------|----------|-------------|
-| `borrower_id`   | string | ✅ Yes   | ID of an existing borrower |
-| `document_type` | string | ✅ Yes   | Accepted values: `pay_stub`, `tax_return`, `bank_statement`, `id_verification` |
-| `file_name`     | string | ✅ Yes   | Name of the uploaded file |
+| Field           | Type   | Required | Constraints | Description |
+|-----------------|--------|----------|-------------|-------------|
+| `borrower_id`   | string | ✅ Yes   | Must be a valid existing borrower ID | ID of an existing borrower |
+| `document_type` | string | ✅ Yes   | Accepted values: `pay_stub`, `tax_return`, `bank_statement`, `id_verification` | Type of document |
+| `file_name`     | string | ✅ Yes   | Max 200 chars, must include file extension | Name of the uploaded file |
 
 **cURL Example**
 
@@ -367,6 +411,10 @@ curl -X POST https://loan-processing-api.onrender.com/v1/documents \
 ```
 
 **Response Example**
+
+```
+Status: 201 Created
+```
 
 ```json
 {
@@ -404,6 +452,10 @@ curl "https://loan-processing-api.onrender.com/v1/documents?borrower_id=br_78234
 
 **Response Example**
 
+```
+Status: 200 OK
+```
+
 ```json
 {
   "documents": [
@@ -438,9 +490,9 @@ PATCH /v1/loan-applications/:id/status
 
 **Request Body**
 
-| Field    | Type   | Required | Description |
-|----------|--------|----------|-------------|
-| `status` | string | ✅ Yes   | Accepted values: `submitted`, `under_review`, `approved`, `rejected` |
+| Field    | Type   | Required | Constraints | Description |
+|----------|--------|----------|-------------|-------------|
+| `status` | string | ✅ Yes   | Must be one of the accepted values | Accepted values: `submitted`, `under_review`, `approved`, `rejected` |
 
 **cURL Example**
 
@@ -460,6 +512,10 @@ curl -X PATCH https://loan-processing-api.onrender.com/v1/loan-applications/app_
 ```
 
 **Response Example**
+
+```
+Status: 200 OK
+```
 
 ```json
 {
@@ -495,6 +551,8 @@ All errors return a consistent JSON structure:
 | `404`       | `not_found`            | Resource not found            |
 | `429`       | `rate_limit_exceeded`  | Too many requests             |
 | `500`       | `server_error`         | Internal server error         |
+
+---
 
 **400 — Invalid Request**
 
@@ -538,6 +596,7 @@ Returned when the requested resource does not exist.
 **429 — Too Many Requests**
 
 Returned when you exceed the API rate limit.
+
 ```json
 {
   "error": "rate_limit_exceeded",
@@ -547,6 +606,7 @@ Returned when you exceed the API rate limit.
 ```
 
 > See the [Rate Limiting](#rate-limiting) section for limits and best practices.
+
 ---
 
 **500 — Server Error**
@@ -559,6 +619,58 @@ Returned when an unexpected error occurs on the server.
   "message": "An unexpected error occurred. Please try again later."
 }
 ```
+
+---
+
+## Rate Limiting
+
+The Loan Processing API limits the number of requests you can make in a given time period to ensure stability and fair usage across all integrations.
+
+**Default Limits**
+
+| Plan  | Requests per minute | Requests per day |
+|-------|---------------------|------------------|
+| Free  | 30                  | 1,000            |
+| Pro   | 100                 | 10,000           |
+
+> **Note:** This is a portfolio demonstration API. Rate limiting is documented here to reflect real-world API design but is not enforced in the current version.
+
+---
+
+### Rate Limit Headers
+
+Every API response includes headers that show your current usage:
+
+| Header                  | Description                                  |
+|-------------------------|----------------------------------------------|
+| `X-RateLimit-Limit`     | Maximum requests allowed per minute          |
+| `X-RateLimit-Remaining` | Requests remaining in current window         |
+| `X-RateLimit-Reset`     | Unix timestamp when the limit resets         |
+
+---
+
+### Exceeded Rate Limit
+
+If you exceed the rate limit the API returns a `429 Too Many Requests` response:
+
+```json
+{
+  "error": "rate_limit_exceeded",
+  "message": "Too many requests. Please wait before retrying.",
+  "retry_after": 60
+}
+```
+
+The `retry_after` field tells you how many seconds to wait before making another request.
+
+---
+
+### Best Practices
+
+- Cache responses where possible to reduce API calls
+- Implement exponential backoff when retrying failed requests
+- Monitor your `X-RateLimit-Remaining` header to avoid hitting limits
+- Contact support to upgrade your plan if you need higher limits
 
 ---
 
@@ -671,63 +783,6 @@ You can test all endpoints using **Postman** or **Hoppscotch** (free, browser-ba
 > **Note:** This API is hosted on Render's free tier. The first request after a period of inactivity may take 30-60 seconds while the server wakes up. Subsequent requests will be fast.
 
 ---
-## Rate Limiting
-
-The Loan Processing API limits the number of requests 
-you can make in a given time period to ensure stability 
-and fair usage across all integrations.
-
-**Default Limits**
-
-| Plan  | Requests per minute | Requests per day |
-|-------|--------------------|--------------------|
-| Free  | 30                 | 1,000              |
-| Pro   | 100                | 10,000             |
-
-> **Note:** This is a portfolio demonstration API. Rate 
-> limiting is documented here to reflect real-world API 
-> design but is not enforced in the current version.
-
----
-
-### Rate Limit Headers
-
-Every API response includes headers that show your 
-current usage:
-
-| Header | Description |
-|--------|-------------|
-| `X-RateLimit-Limit` | Maximum requests allowed per minute |
-| `X-RateLimit-Remaining` | Requests remaining in current window |
-| `X-RateLimit-Reset` | Unix timestamp when the limit resets |
-
----
-
-### Exceeded Rate Limit
-
-If you exceed the rate limit the API returns a 
-`429 Too Many Requests` response:
-```json
-{
-  "error": "rate_limit_exceeded",
-  "message": "Too many requests. Please wait before retrying.",
-  "retry_after": 60
-}
-```
-
-The `retry_after` field tells you how many seconds 
-to wait before making another request.
-
----
-
-### Best Practices
-
-- Cache responses where possible to reduce API calls
-- Implement exponential backoff when retrying failed requests
-- Monitor your `X-RateLimit-Remaining` header to avoid hitting limits
-- Contact support to upgrade your plan if you need higher limits
-
----
 
 ## Glossary
 
@@ -746,6 +801,21 @@ to wait before making another request.
 | **HTTP Status Code** | A three-digit code returned by an API to indicate the result of a request. Common codes include `200` (success), `400` (bad request), `401` (unauthorized), `404` (not found), and `500` (server error). |
 | **Query Parameter** | A key-value pair appended to a URL to filter or modify a request. For example: `/v1/documents?borrower_id=br_78234`. |
 | **Path Parameter** | A variable segment in a URL that identifies a specific resource. For example: `/v1/borrowers/:id` where `:id` is the path parameter. |
+| **Versioning** | A strategy for managing changes to an API over time. This API uses URL versioning — for example `/v1/borrowers`. |
+| **Rate Limiting** | A restriction on how many API requests can be made in a given time period. Protects the API from overuse and ensures fair access. |
+
+---
+
+## Support
+
+This is a portfolio demonstration project.
+
+For questions, feedback, or issues:
+
+- **GitHub Issues:** [Open an issue](https://github.com/writingteacher/loan-processing-api/issues)
+- **GitHub Profile:** [writingteacher](https://github.com/writingteacher)
+
+> **Note:** In a production API, this section would include support email, SLA information, and links to a developer forum or help center.
 
 ---
 
@@ -755,7 +825,10 @@ This API was built as a **technical writing portfolio sample** to demonstrate:
 
 - REST API documentation structure
 - Endpoint documentation with request/response examples
+- Field validation and constraints documentation
 - Error handling documentation
+- Rate limiting documentation
+- Versioning strategy documentation
 - Developer workflow documentation
 - Fintech domain knowledge
 - Live API deployment
