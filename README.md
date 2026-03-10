@@ -21,149 +21,9 @@ A mock REST API for a fictional fintech loan processing platform. Built as a tec
   - [Get Single Borrower](#get-single-borrower)
   - [Submit Loan Application](#submit-loan-application)
   - [Get All Loan Applications](#get-all-loan-applications)
-    - [Upload Document](#upload-document)
-    - [Get Documents](#get-documents)
-    - [Update Loan Status](#update-loan-status)
-    ---
-
-### Upload Document
-
-Uploads a supporting document linked to an existing borrower.
-```
-POST /v1/documents
-```
-
-**Request Body**
-
-| Field           | Type   | Required | Description                                                    |
-|-----------------|--------|----------|----------------------------------------------------------------|
-| `borrower_id`   | string | ✅ Yes   | ID of an existing borrower                                     |
-| `document_type` | string | ✅ Yes   | Type of document. Accepted values: `pay_stub`, `tax_return`, `bank_statement`, `id_verification` |
-| `file_name`     | string | ✅ Yes   | Name of the uploaded file                                      |
-
-**cURL Example**
-
-​```bash
-curl -X POST https://loan-processing-api.onrender.com/v1/documents \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer test_key_loanapi_2026" \
-  -d '{"borrower_id": "br_78234", "document_type": "pay_stub", "file_name": "jane_pay_stub_march2026.pdf"}'
-​```
-
-**Request Example**
-
-​```json
-{
-  "borrower_id": "br_78234",
-  "document_type": "pay_stub",
-  "file_name": "jane_pay_stub_march2026.pdf"
-}
-​```
-
-**Response Example**
-
-​```json
-{
-  "document_id": "doc_90589",
-  "borrower_id": "br_78234",
-  "document_type": "pay_stub",
-  "file_name": "jane_pay_stub_march2026.pdf",
-  "status": "received",
-  "uploaded_at": "2026-03-10T10:31:12.611Z"
-}
-​```
-
----
-
-### Get Documents
-
-Returns all documents uploaded for a specific borrower.
-```
-GET /v1/documents?borrower_id={borrower_id}
-```
-
-**Query Parameter**
-
-| Parameter     | Type   | Required | Description             |
-|---------------|--------|----------|-------------------------|
-| `borrower_id` | string | ✅ Yes   | ID of an existing borrower |
-
-**cURL Example**
-
-​```bash
-curl "https://loan-processing-api.onrender.com/v1/documents?borrower_id=br_78234" \
-  -H "Authorization: Bearer test_key_loanapi_2026"
-​```
-
-**Response Example**
-
-​```json
-{
-  "documents": [
-    {
-      "document_id": "doc_90589",
-      "borrower_id": "br_78234",
-      "document_type": "pay_stub",
-      "file_name": "jane_pay_stub_march2026.pdf",
-      "status": "received",
-      "uploaded_at": "2026-03-10T10:31:12.611Z"
-    }
-  ],
-  "total": 1
-}
-​```
-
----
-
-### Update Loan Status
-
-Updates the status of an existing loan application.
-```
-PATCH /v1/loan-applications/:id/status
-```
-
-**Path Parameter**
-
-| Parameter | Description                                    |
-|-----------|------------------------------------------------|
-| `id`      | The `application_id` returned on creation      |
-
-**Request Body**
-
-| Field    | Type   | Required | Description                                                                 |
-|----------|--------|----------|-----------------------------------------------------------------------------|
-| `status` | string | ✅ Yes   | New status. Accepted values: `submitted`, `under_review`, `approved`, `rejected` |
-
-**cURL Example**
-
-​```bash
-curl -X PATCH https://loan-processing-api.onrender.com/v1/loan-applications/app_90821/status \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer test_key_loanapi_2026" \
-  -d '{"status": "approved"}'
-​```
-
-**Request Example**
-
-​```json
-{
-  "status": "approved"
-}
-​```
-
-**Response Example**
-
-​```json
-{
-  "application_id": "app_90821",
-  "borrower_id": "br_78234",
-  "loan_amount": 350000,
-  "property_value": 420000,
-  "status": "approved",
-  "submitted_at": "2026-03-10T10:31:55.609Z",
-  "updated_at": "2026-03-10T10:33:01.974Z"
-}
-​```
+  - [Upload Document](#upload-document)
+  - [Get Documents](#get-documents)
+  - [Update Loan Status](#update-loan-status)
 - [Error Handling](#error-handling)
 - [Workflow Example](#workflow-example)
 - [Testing the API](#testing-the-api)
@@ -461,6 +321,150 @@ curl https://loan-processing-api.onrender.com/v1/loan-applications \
     }
   ],
   "total": 1
+}
+```
+
+---
+
+### Upload Document
+
+Uploads a supporting document linked to an existing borrower.
+
+```
+POST /v1/documents
+```
+
+**Request Body**
+
+| Field           | Type   | Required | Description |
+|-----------------|--------|----------|-------------|
+| `borrower_id`   | string | ✅ Yes   | ID of an existing borrower |
+| `document_type` | string | ✅ Yes   | Accepted values: `pay_stub`, `tax_return`, `bank_statement`, `id_verification` |
+| `file_name`     | string | ✅ Yes   | Name of the uploaded file |
+
+**cURL Example**
+
+```bash
+curl -X POST https://loan-processing-api.onrender.com/v1/documents \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer test_key_loanapi_2026" \
+  -d '{"borrower_id": "br_78234", "document_type": "pay_stub", "file_name": "jane_pay_stub_march2026.pdf"}'
+```
+
+**Request Example**
+
+```json
+{
+  "borrower_id": "br_78234",
+  "document_type": "pay_stub",
+  "file_name": "jane_pay_stub_march2026.pdf"
+}
+```
+
+**Response Example**
+
+```json
+{
+  "document_id": "doc_90589",
+  "borrower_id": "br_78234",
+  "document_type": "pay_stub",
+  "file_name": "jane_pay_stub_march2026.pdf",
+  "status": "received",
+  "uploaded_at": "2026-03-10T10:31:12.611Z"
+}
+```
+
+---
+
+### Get Documents
+
+Returns all documents uploaded for a specific borrower.
+
+```
+GET /v1/documents?borrower_id={borrower_id}
+```
+
+**Query Parameter**
+
+| Parameter     | Type   | Required | Description |
+|---------------|--------|----------|-------------|
+| `borrower_id` | string | ✅ Yes   | ID of an existing borrower |
+
+**cURL Example**
+
+```bash
+curl "https://loan-processing-api.onrender.com/v1/documents?borrower_id=br_78234" \
+  -H "Authorization: Bearer test_key_loanapi_2026"
+```
+
+**Response Example**
+
+```json
+{
+  "documents": [
+    {
+      "document_id": "doc_90589",
+      "borrower_id": "br_78234",
+      "document_type": "pay_stub",
+      "file_name": "jane_pay_stub_march2026.pdf",
+      "status": "received",
+      "uploaded_at": "2026-03-10T10:31:12.611Z"
+    }
+  ],
+  "total": 1
+}
+```
+
+---
+
+### Update Loan Status
+
+Updates the status of an existing loan application.
+
+```
+PATCH /v1/loan-applications/:id/status
+```
+
+**Path Parameter**
+
+| Parameter | Description |
+|-----------|-------------|
+| `id`      | The `application_id` returned on creation |
+
+**Request Body**
+
+| Field    | Type   | Required | Description |
+|----------|--------|----------|-------------|
+| `status` | string | ✅ Yes   | Accepted values: `submitted`, `under_review`, `approved`, `rejected` |
+
+**cURL Example**
+
+```bash
+curl -X PATCH https://loan-processing-api.onrender.com/v1/loan-applications/app_90821/status \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer test_key_loanapi_2026" \
+  -d '{"status": "approved"}'
+```
+
+**Request Example**
+
+```json
+{
+  "status": "approved"
+}
+```
+
+**Response Example**
+
+```json
+{
+  "application_id": "app_90821",
+  "borrower_id": "br_78234",
+  "loan_amount": 350000,
+  "property_value": 420000,
+  "status": "approved",
+  "submitted_at": "2026-03-10T10:31:55.609Z",
+  "updated_at": "2026-03-10T10:33:01.974Z"
 }
 ```
 
