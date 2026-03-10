@@ -549,8 +549,6 @@ Returned when you exceed the API rate limit.
 > See the [Rate Limiting](#rate-limiting) section for limits and best practices.
 ---
 
----
-
 **500 — Server Error**
 
 Returned when an unexpected error occurs on the server.
