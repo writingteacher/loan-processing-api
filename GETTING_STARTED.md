@@ -13,6 +13,8 @@ This guide walks you through making your first API calls in under 5 minutes.
 Bearer test_key_loanapi_2026
 ```
 
+> **Tip:** Want to skip setup? Import the [Postman Collection](loan-processing-api.postman_collection.json) and all endpoints are pre-configured and ready to test.
+
 ---
 
 ## Step 1 — Confirm the API is Running
@@ -26,6 +28,10 @@ curl https://loan-processing-api.onrender.com/
 ```
 
 **Expected Response:**
+
+```
+Status: 200 OK
+```
 
 ```json
 {
@@ -75,6 +81,10 @@ curl -X POST https://loan-processing-api.onrender.com/v1/borrowers \
 
 **Expected Response:**
 
+```
+Status: 201 Created
+```
+
 ```json
 {
   "borrower_id": "br_78234",
@@ -82,7 +92,7 @@ curl -X POST https://loan-processing-api.onrender.com/v1/borrowers \
   "last_name": "Smith",
   "email": "jane@example.com",
   "status": "created",
-  "created_at": "2026-03-09T10:00:00Z"
+  "created_at": "2026-03-09T10:00:00.000Z"
 }
 ```
 
@@ -105,42 +115,61 @@ curl -X POST https://loan-processing-api.onrender.com/v1/loan-applications \
 
 **Expected Response:**
 
+```
+Status: 201 Created
+```
+
 ```json
 {
   "application_id": "app_90821",
   "borrower_id": "br_78234",
   "loan_amount": 350000,
   "property_value": 420000,
+  "ltv": 83.33,
   "status": "submitted",
-  "submitted_at": "2026-03-09T10:05:00Z"
+  "submitted_at": "2026-03-09T10:05:00.000Z"
 }
 ```
 
-> **Important:** Save the `application_id` from the response. You will need it to retrieve the application status.
+> **Important:** Save the `application_id` from the response. You will need it to update the loan status.
+>
+> **Note:** The `ltv` field is calculated automatically — loan_amount ÷ property_value × 100.
 
 ---
 
-## Step 5 — Retrieve Your Application
+## Step 5 — Retrieve All Loan Applications
 
-Use the `application_id` from Step 4 to retrieve your loan application.
+Use pagination to retrieve your loan applications.
 
 **Request:**
 
 ```bash
-curl https://loan-processing-api.onrender.com/v1/loan-applications/app_90821 \
+curl "https://loan-processing-api.onrender.com/v1/loan-applications?limit=10&offset=0" \
   -H "Authorization: Bearer test_key_loanapi_2026"
 ```
 
 **Expected Response:**
 
+```
+Status: 200 OK
+```
+
 ```json
 {
-  "application_id": "app_90821",
-  "borrower_id": "br_78234",
-  "loan_amount": 350000,
-  "property_value": 420000,
-  "status": "submitted",
-  "submitted_at": "2026-03-09T10:05:00Z"
+  "applications": [
+    {
+      "application_id": "app_90821",
+      "borrower_id": "br_78234",
+      "loan_amount": 350000,
+      "property_value": 420000,
+      "ltv": 83.33,
+      "status": "submitted",
+      "submitted_at": "2026-03-09T10:05:00.000Z"
+    }
+  ],
+  "total": 1,
+  "limit": 10,
+  "offset": 0
 }
 ```
 
@@ -154,8 +183,8 @@ In 5 steps you completed a full loan application workflow:
 ✅ Step 1 — Confirmed the API is running
 ✅ Step 2 — Authenticated your requests
 ✅ Step 3 — Created a borrower profile
-✅ Step 4 — Submitted a loan application
-✅ Step 5 — Retrieved the application status
+✅ Step 4 — Submitted a loan application with LTV calculation
+✅ Step 5 — Retrieved applications using pagination
 ```
 
 This is the core workflow every integration with the Loan Processing API follows.
@@ -166,9 +195,11 @@ This is the core workflow every integration with the Loan Processing API follows
 
 Now that you've completed your first workflow, explore the full API:
 
-- [Full Endpoint Reference](README.md#endpoints) — detailed documentation for every endpoint
-- [Error Handling](README.md#error-handling) — how to handle errors in your integration
-- [Workflow Example](README.md#workflow-example) — a complete end-to-end workflow diagram
+- [Full Endpoint Reference](docs/endpoints/borrowers.md) — detailed documentation for all endpoints
+- [Authentication Guide](docs/authentication.md) — API keys and security
+- [Error Handling](docs/errors.md) — how to handle errors in your integration
+- [Idempotency](docs/idempotency.md) — preventing duplicate requests
+- [Rate Limiting](docs/rate-limiting.md) — request limits and best practices
 
 ---
 
@@ -178,5 +209,6 @@ If something isn't working as expected:
 
 1. Check that your API key is correct — `Bearer test_key_loanapi_2026`
 2. Check that your request body is valid JSON
-3. Check the [Error Handling](README.md#error-handling) section for common error codes
-4. Review the full endpoint documentation in the [README](README.md)
+3. Check the [Error Handling](docs/errors.md) section for common error codes
+4. Review the full endpoint documentation in [docs/endpoints](docs/endpoints/borrowers.md)
+5. [Open an issue](https://github.com/writingteacher/loan-processing-api/issues) on GitHub

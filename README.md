@@ -30,6 +30,7 @@ Already familiar with REST APIs? Import the Postman collection and start testing
 | [Rate Limiting](docs/rate-limiting.md) | Request limits, headers, best practices |
 | [Error Handling](docs/errors.md) | Error codes, response structure, validation errors |
 | [Glossary](docs/glossary.md) | Fintech and API terminology |
+| [Architecture](docs/architecture.md) | API architecture, data relationships, and loan status workflow |
 
 ---
 
