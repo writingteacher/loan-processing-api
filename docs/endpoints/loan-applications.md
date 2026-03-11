@@ -61,6 +61,7 @@ Status: 201 Created
   "borrower_id": "br_78234",
   "loan_amount": 350000,
   "property_value": 420000,
+  "ltv": 83.33,
   "status": "submitted",
   "submitted_at": "2026-03-09T10:05:00.000Z"
 }
@@ -71,24 +72,27 @@ Status: 201 Created
 ## Get All Loan Applications
 
 Returns a list of all submitted loan applications.
-
 ```
 GET /v1/loan-applications
 ```
 
-**cURL Example**
+**Query Parameters (optional)**
 
+| Parameter | Type    | Default | Description |
+|-----------|---------|---------|-------------|
+| `limit`   | integer | 10      | Number of records to return |
+| `offset`  | integer | 0       | Number of records to skip   |
+
+**cURL Example**
 ```bash
-curl https://loan-processing-api.onrender.com/v1/loan-applications \
+curl "https://loan-processing-api.onrender.com/v1/loan-applications?limit=10&offset=0" \
   -H "Authorization: Bearer test_key_loanapi_2026"
 ```
 
 **Response Example**
-
 ```
 Status: 200 OK
 ```
-
 ```json
 {
   "applications": [
@@ -97,11 +101,14 @@ Status: 200 OK
       "borrower_id": "br_78234",
       "loan_amount": 350000,
       "property_value": 420000,
+      "ltv": 83.33,
       "status": "submitted",
       "submitted_at": "2026-03-09T10:05:00.000Z"
     }
   ],
-  "total": 1
+  "total": 1,
+  "limit": 10,
+  "offset": 0
 }
 ```
 
@@ -168,6 +175,7 @@ Status: 200 OK
   "application_id": "app_90821",
   "borrower_id": "br_78234",
   "loan_amount": 350000,
+  "ltv": 83.33,
   "property_value": 420000,
   "status": "approved",
   "submitted_at": "2026-03-09T10:05:00.000Z",

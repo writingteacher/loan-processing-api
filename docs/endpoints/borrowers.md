@@ -63,16 +63,16 @@ Status: 201 Created
 
 ---
 
-## Get All Borrowers
+**Query Parameters (optional)**
 
-Returns a list of all borrower profiles.
-```
-GET /v1/borrowers
-```
+| Parameter | Type    | Default | Description |
+|-----------|---------|---------|-------------|
+| `limit`   | integer | 10      | Number of records to return |
+| `offset`  | integer | 0       | Number of records to skip   |
 
 **cURL Example**
 ```bash
-curl https://loan-processing-api.onrender.com/v1/borrowers \
+curl "https://loan-processing-api.onrender.com/v1/borrowers?limit=10&offset=0" \
   -H "Authorization: Bearer test_key_loanapi_2026"
 ```
 
@@ -92,11 +92,11 @@ Status: 200 OK
       "created_at": "2026-03-09T10:00:00.000Z"
     }
   ],
-  "total": 1
+  "total": 1,
+  "limit": 10,
+  "offset": 0
 }
 ```
-
----
 
 ## Get Single Borrower
 
