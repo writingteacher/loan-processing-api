@@ -14,6 +14,10 @@ New to the API? Start here:
 
 → [Getting Started Guide](GETTING_STARTED.md)
 
+Already familiar with REST APIs? Import the Postman collection and start testing immediately:
+
+→ [Download Postman Collection](loan-processing-api.postman_collection.json)
+
 ---
 
 ## Documentation

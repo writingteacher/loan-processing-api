@@ -1,0 +1,280 @@
+{
+  "info": {
+    "name": "Loan Processing API",
+    "description": "A mock REST API for a fictional fintech loan processing platform. Import this collection to test all endpoints with pre-configured requests.\n\nLive API: https://loan-processing-api.onrender.com\nTest API Key: Bearer test_key_loanapi_2026",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://loan-processing-api.onrender.com",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "Bearer test_key_loanapi_2026",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Root",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            },
+            "description": "Check that the API is running. No authentication required."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Borrowers",
+      "item": [
+        {
+          "name": "Create Borrower",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Smith\",\n  \"email\": \"jane@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/borrowers",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "borrowers"]
+            },
+            "description": "Creates a new borrower profile. Save the borrower_id from the response — you need it to submit a loan application."
+          }
+        },
+        {
+          "name": "Get All Borrowers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/borrowers?limit=10&offset=0",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "borrowers"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of records to return (default: 10)"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Number of records to skip (default: 0)"
+                }
+              ]
+            },
+            "description": "Returns a paginated list of all borrower profiles."
+          }
+        },
+        {
+          "name": "Get Single Borrower",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/borrowers/br_78234",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "borrowers", "br_78234"]
+            },
+            "description": "Returns a single borrower by ID. Replace br_78234 with a real borrower_id."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Loan Applications",
+      "item": [
+        {
+          "name": "Submit Loan Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrower_id\": \"br_78234\",\n  \"loan_amount\": 350000,\n  \"property_value\": 420000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/loan-applications",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "loan-applications"]
+            },
+            "description": "Submits a new loan application. Replace borrower_id with a real borrower_id. Save the application_id from the response."
+          }
+        },
+        {
+          "name": "Get All Loan Applications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/loan-applications?limit=10&offset=0",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "loan-applications"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of records to return (default: 10)"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Number of records to skip (default: 0)"
+                }
+              ]
+            },
+            "description": "Returns a paginated list of all loan applications including calculated LTV."
+          }
+        },
+        {
+          "name": "Update Loan Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"under_review\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/loan-applications/app_90821/status",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "loan-applications", "app_90821", "status"]
+            },
+            "description": "Updates loan status. Replace app_90821 with a real application_id. Valid values: submitted, under_review, approved, rejected."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Register Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrower_id\": \"br_78234\",\n  \"document_type\": \"pay_stub\",\n  \"file_name\": \"jane_pay_stub_march2026.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/documents",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "documents"]
+            },
+            "description": "Registers a document record. Accepted document_type values: pay_stub, tax_return, bank_statement, id_verification."
+          }
+        },
+        {
+          "name": "Get Documents",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/documents?borrower_id=br_78234",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "documents"],
+              "query": [
+                {
+                  "key": "borrower_id",
+                  "value": "br_78234",
+                  "description": "Required. ID of the borrower whose documents you want to retrieve."
+                }
+              ]
+            },
+            "description": "Returns all documents registered for a specific borrower. Replace br_78234 with a real borrower_id."
+          }
+        }
+      ]
+    }
+  ]
+}
