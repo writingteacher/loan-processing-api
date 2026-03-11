@@ -575,6 +575,7 @@ All errors return a consistent JSON structure:
 
 Returned when required fields are missing or contain invalid values.
 
+**Single field error:**
 ```json
 {
   "error": "invalid_request",
@@ -582,7 +583,27 @@ Returned when required fields are missing or contain invalid values.
 }
 ```
 
----
+**Multiple field errors:**
+```json
+{
+  "error": "invalid_request",
+  "message": "Validation failed.",
+  "errors": [
+    {
+      "field": "first_name",
+      "message": "first_name is required."
+    },
+    {
+      "field": "email",
+      "message": "email must be a valid email address."
+    },
+    {
+      "field": "loan_amount",
+      "message": "loan_amount must be between 1,000 and 10,000,000."
+    }
+  ]
+}
+```
 
 **401 — Unauthorized**
 
