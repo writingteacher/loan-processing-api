@@ -68,7 +68,15 @@ app.post("/v1/borrowers", (req, res) => {
 
 // Get all borrowers
 app.get("/v1/borrowers", (req, res) => {
-  res.json({ borrowers, total: borrowers.length });
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = parseInt(req.query.offset) || 0;
+  const paginated = borrowers.slice(offset, offset + limit);
+  res.json({
+    borrowers: paginated,
+    total: borrowers.length,
+    limit,
+    offset
+  });
 });
 
 // Get a single borrower
@@ -106,11 +114,14 @@ app.post("/v1/loan-applications", (req, res) => {
     });
   }
 
+  const ltv = parseFloat(((loan_amount / property_value) * 100).toFixed(2));
+
   const application = {
     application_id: "app_" + Math.floor(Math.random() * 90000 + 10000),
     borrower_id,
     loan_amount,
     property_value,
+    ltv,
     status: "submitted",
     submitted_at: new Date().toISOString()
   };
@@ -121,7 +132,15 @@ app.post("/v1/loan-applications", (req, res) => {
 
 // Get all loan applications
 app.get("/v1/loan-applications", (req, res) => {
-  res.json({ applications, total: applications.length });
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = parseInt(req.query.offset) || 0;
+  const paginated = applications.slice(offset, offset + limit);
+  res.json({
+    applications: paginated,
+    total: applications.length,
+    limit,
+    offset
+  });
 });
 
 // Get a single loan application
