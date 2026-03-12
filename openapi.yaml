@@ -1,0 +1,547 @@
+openapi: 3.0.3
+
+info:
+  title: Loan Processing API
+  description: |
+    A mock REST API for a fictional fintech loan processing platform.
+    
+    Built as a technical writing portfolio sample to demonstrate API 
+    documentation, endpoint design, and developer experience writing.
+    
+    **Live API:** https://loan-processing-api.onrender.com
+    
+    **Test API Key:** Bearer test_key_loanapi_2026
+  version: 1.2.0
+  contact:
+    name: writingteacher
+    url: https://github.com/writingteacher/loan-processing-api
+
+servers:
+  - url: https://loan-processing-api.onrender.com
+    description: Live API
+  - url: http://localhost:3000
+    description: Local development
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+security:
+  - BearerAuth: []
+  schemas:
+    Borrower:
+      type: object
+      properties:
+        borrower_id:
+          type: string
+          example: br_78234
+        first_name:
+          type: string
+          maxLength: 50
+          example: Jane
+        last_name:
+          type: string
+          maxLength: 50
+          example: Smith
+        email:
+          type: string
+          format: email
+          maxLength: 100
+          example: jane@example.com
+        status:
+          type: string
+          example: created
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-03-09T10:00:00.000Z"
+
+    LoanApplication:
+      type: object
+      properties:
+        application_id:
+          type: string
+          example: app_90821
+        borrower_id:
+          type: string
+          example: br_78234
+        loan_amount:
+          type: number
+          minimum: 1000
+          maximum: 10000000
+          example: 350000
+        property_value:
+          type: number
+          minimum: 1000
+          maximum: 50000000
+          example: 420000
+        ltv:
+          type: number
+          readOnly: true
+          example: 83.33
+          description: Calculated automatically as loan_amount / property_value * 100
+        status:
+          type: string
+          enum: [submitted, under_review, approved, rejected]
+          example: submitted
+        submitted_at:
+          type: string
+          format: date-time
+          example: "2026-03-09T10:05:00.000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-03-09T10:33:01.000Z"
+
+    Document:
+      type: object
+      properties:
+        document_id:
+          type: string
+          example: doc_90589
+        borrower_id:
+          type: string
+          example: br_78234
+        document_type:
+          type: string
+          enum: [pay_stub, tax_return, bank_statement, id_verification]
+          example: pay_stub
+        file_name:
+          type: string
+          maxLength: 200
+          example: jane_pay_stub_march2026.pdf
+        status:
+          type: string
+          example: received
+        uploaded_at:
+          type: string
+          format: date-time
+          example: "2026-03-09T10:00:00.000Z"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: invalid_request
+        message:
+          type: string
+          example: first_name, last_name, and email are required.
+
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: invalid_request
+        message:
+          type: string
+          example: Validation failed.
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: email
+              message:
+                type: string
+                example: email must be a valid email address.
+                paths:
+  /:
+    get:
+      summary: Health Check
+      description: Check that the API is running. No authentication required.
+      security: []
+      tags:
+        - Root
+      responses:
+        "200":
+          description: API is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Loan Processing API is running.
+                  version:
+                    type: string
+                    example: 1.0.0
+                  docs:
+                    type: string
+                    example: https://github.com/writingteacher/loan-processing-api
+
+  /v1/borrowers:
+    post:
+      summary: Create Borrower
+      description: Creates a new borrower profile in the loan processing system.
+      tags:
+        - Borrowers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [first_name, last_name, email]
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 50
+                  example: Jane
+                last_name:
+                  type: string
+                  maxLength: 50
+                  example: Smith
+                email:
+                  type: string
+                  format: email
+                  maxLength: 100
+                  example: jane@example.com
+      responses:
+        "201":
+          description: Borrower created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Borrower"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    get:
+      summary: Get All Borrowers
+      description: Returns a paginated list of all borrower profiles.
+      tags:
+        - Borrowers
+      parameters:
+        - name: limit
+          in: query
+          description: Number of records to return
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          description: Number of records to skip
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of borrowers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  borrowers:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Borrower"
+                  total:
+                    type: integer
+                    example: 1
+                  limit:
+                    type: integer
+                    example: 10
+                  offset:
+                    type: integer
+                    example: 0
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /v1/borrowers/{id}:
+    get:
+      summary: Get Single Borrower
+      description: Returns a single borrower by ID.
+      tags:
+        - Borrowers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The borrower_id returned on creation
+          schema:
+            type: string
+            example: br_78234
+      responses:
+        "200":
+          description: Borrower found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Borrower"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Borrower not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /v1/loan-applications:
+    post:
+      summary: Submit Loan Application
+      description: Creates a new loan application linked to an existing borrower.
+      tags:
+        - Loan Applications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [borrower_id, loan_amount, property_value]
+              properties:
+                borrower_id:
+                  type: string
+                  example: br_78234
+                loan_amount:
+                  type: number
+                  minimum: 1000
+                  maximum: 10000000
+                  example: 350000
+                property_value:
+                  type: number
+                  minimum: 1000
+                  maximum: 50000000
+                  example: 420000
+      responses:
+        "201":
+          description: Loan application created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanApplication"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Borrower not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    get:
+      summary: Get All Loan Applications
+      description: Returns a paginated list of all loan applications.
+      tags:
+        - Loan Applications
+      parameters:
+        - name: limit
+          in: query
+          description: Number of records to return
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          description: Number of records to skip
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of loan applications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  applications:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/LoanApplication"
+                  total:
+                    type: integer
+                    example: 1
+                  limit:
+                    type: integer
+                    example: 10
+                  offset:
+                    type: integer
+                    example: 0
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /v1/loan-applications/{id}/status:
+    patch:
+      summary: Update Loan Status
+      description: Updates the status of an existing loan application.
+      tags:
+        - Loan Applications
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The application_id returned on creation
+          schema:
+            type: string
+            example: app_90821
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [submitted, under_review, approved, rejected]
+                  example: approved
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanApplication"
+        "400":
+          description: Invalid status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /v1/documents:
+    post:
+      summary: Register Document
+      description: Registers a document record linked to an existing borrower. Records metadata only — file upload via multipart/form-data is not supported in v1.
+      tags:
+        - Documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [borrower_id, document_type, file_name]
+              properties:
+                borrower_id:
+                  type: string
+                  example: br_78234
+                document_type:
+                  type: string
+                  enum: [pay_stub, tax_return, bank_statement, id_verification]
+                  example: pay_stub
+                file_name:
+                  type: string
+                  maxLength: 200
+                  example: jane_pay_stub_march2026.pdf
+      responses:
+        "201":
+          description: Document registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Borrower not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    get:
+      summary: Get Documents
+      description: Returns all documents registered for a specific borrower.
+      tags:
+        - Documents
+      parameters:
+        - name: borrower_id
+          in: query
+          required: true
+          description: ID of the borrower whose documents to retrieve
+          schema:
+            type: string
+            example: br_78234
+      responses:
+        "200":
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Document"
+                  total:
+                    type: integer
+                    example: 1
+        "400":
+          description: Missing borrower_id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
