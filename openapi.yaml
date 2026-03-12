@@ -4,12 +4,12 @@ info:
   title: Loan Processing API
   description: |
     A mock REST API for a fictional fintech loan processing platform.
-    
-    Built as a technical writing portfolio sample to demonstrate API 
+
+    Built as a technical writing portfolio sample to demonstrate API
     documentation, endpoint design, and developer experience writing.
-    
+
     **Live API:** https://loan-processing-api.onrender.com
-    
+
     **Test API Key:** Bearer test_key_loanapi_2026
   version: 1.2.0
   contact:
@@ -22,14 +22,15 @@ servers:
   - url: http://localhost:3000
     description: Local development
 
+security:
+  - BearerAuth: []
+
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
 
-security:
-  - BearerAuth: []
   schemas:
     Borrower:
       type: object
@@ -150,7 +151,8 @@ security:
               message:
                 type: string
                 example: email must be a valid email address.
-                paths:
+
+paths:
   /:
     get:
       summary: Health Check
