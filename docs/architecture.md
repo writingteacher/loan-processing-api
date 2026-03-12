@@ -24,6 +24,46 @@ flowchart TD
     Documents <--> Store
 ```
 
+## Request Sequence — Submit Loan Application
+
+This diagram shows exactly what happens inside the API when a developer
+sends a `POST /v1/loan-applications` request.
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Auth as Auth Middleware
+    participant API as Loan Applications Handler
+    participant Store as Data Store
+
+    Client->>Auth: POST /v1/loan-applications
+    Note over Client,Auth: Authorization: Bearer test_key_loanapi_2026
+
+    Auth->>Auth: Validate API key
+    alt Invalid or missing key
+        Auth-->>Client: 401 Unauthorized
+    end
+
+    Auth->>API: Request passed through
+
+    API->>API: Validate required fields
+    alt Missing fields
+        API-->>Client: 400 Invalid Request
+    end
+
+    API->>Store: Look up borrower_id
+    alt Borrower not found
+        API-->>Client: 404 Not Found
+    end
+
+    API->>API: Calculate LTV
+    Note over API: ltv = loan_amount / property_value * 100
+
+    API->>Store: Save new application
+    Store-->>API: Application saved
+
+    API-->>Client: 201 Created + application object
+    Note over API,Client: Includes application_id and ltv
+```
 ---
 
 ## Data Relationships

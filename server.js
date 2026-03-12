@@ -7,13 +7,19 @@ app.use(express.json());
 
 // ─────────────────────────────────────────
 // AUTHENTICATION MIDDLEWARE
+// Validates the Bearer token on every request except the root endpoint.
+// Returns 401 Unauthorized if the token is missing or incorrect.
+// All protected endpoints require: Authorization: Bearer test_key_loanapi_2026
 // ─────────────────────────────────────────
 const TEST_API_KEY = "test_key_loanapi_2026";
 
 app.use((req, res, next) => {
+  // Allow unauthenticated access to the root health check endpoint
   if (req.path === "/") return next();
   
   const authHeader = req.headers["authorization"];
+
+  // Reject requests with missing or invalid API keys
   if (!authHeader || authHeader !== `Bearer ${TEST_API_KEY}`) {
     return res.status(401).json({
       error: "unauthorized",
@@ -23,12 +29,19 @@ app.use((req, res, next) => {
   next();
 });
 
-// In-memory data store (mock database)
+// ─────────────────────────────────────────
+// IN-MEMORY DATA STORE
+// Simulates a database using arrays. Data resets on every server restart.
+// In a production API these would be persistent database collections.
+// ─────────────────────────────────────────
 const borrowers = [];
 const applications = [];
+const documents = [];
 
 // ─────────────────────────────────────────
 // ROOT
+// Health check endpoint. No authentication required.
+// Returns API status, version, and docs URL.
 // ─────────────────────────────────────────
 app.get("/", (req, res) => {
   res.json({
@@ -40,9 +53,14 @@ app.get("/", (req, res) => {
 
 // ─────────────────────────────────────────
 // BORROWERS
+// A borrower profile must be created before a loan application can be submitted.
+// The borrower_id returned on creation is required for all subsequent operations.
 // ─────────────────────────────────────────
 
 // Create a borrower
+// Validates that first_name, last_name, and email are all present.
+// Returns 400 if any required field is missing.
+// Returns 201 with the new borrower object including a generated borrower_id.
 app.post("/v1/borrowers", (req, res) => {
   const { first_name, last_name, email } = req.body;
 
@@ -67,6 +85,9 @@ app.post("/v1/borrowers", (req, res) => {
 });
 
 // Get all borrowers
+// Supports pagination via limit and offset query parameters.
+// Default: limit=10, offset=0
+// Returns the paginated borrower list plus total count, limit, and offset.
 app.get("/v1/borrowers", (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const offset = parseInt(req.query.offset) || 0;
@@ -79,7 +100,8 @@ app.get("/v1/borrowers", (req, res) => {
   });
 });
 
-// Get a single borrower
+// Get a single borrower by ID
+// Returns 404 if the borrower_id does not exist in the data store.
 app.get("/v1/borrowers/:id", (req, res) => {
   const borrower = borrowers.find(b => b.borrower_id === req.params.id);
   if (!borrower) {
@@ -93,9 +115,16 @@ app.get("/v1/borrowers/:id", (req, res) => {
 
 // ─────────────────────────────────────────
 // LOAN APPLICATIONS
+// Loan applications must be linked to an existing borrower via borrower_id.
+// LTV (Loan-to-Value) is calculated automatically on creation.
+// Status transitions follow a strict state machine — see docs/endpoints/loan-applications.md
 // ─────────────────────────────────────────
 
 // Submit a loan application
+// Validates that borrower_id, loan_amount, and property_value are all present.
+// Verifies that the borrower_id exists — returns 404 if not found.
+// Calculates LTV automatically: (loan_amount / property_value) * 100
+// Returns 201 with the new application object including generated application_id and ltv.
 app.post("/v1/loan-applications", (req, res) => {
   const { borrower_id, loan_amount, property_value } = req.body;
 
@@ -114,6 +143,7 @@ app.post("/v1/loan-applications", (req, res) => {
     });
   }
 
+  // Calculate LTV rounded to 2 decimal places
   const ltv = parseFloat(((loan_amount / property_value) * 100).toFixed(2));
 
   const application = {
@@ -131,6 +161,9 @@ app.post("/v1/loan-applications", (req, res) => {
 });
 
 // Get all loan applications
+// Supports pagination via limit and offset query parameters.
+// Default: limit=10, offset=0
+// Returns the paginated application list plus total count, limit, and offset.
 app.get("/v1/loan-applications", (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const offset = parseInt(req.query.offset) || 0;
@@ -143,7 +176,8 @@ app.get("/v1/loan-applications", (req, res) => {
   });
 });
 
-// Get a single loan application
+// Get a single loan application by ID
+// Returns 404 if the application_id does not exist in the data store.
 app.get("/v1/loan-applications/:id", (req, res) => {
   const application = applications.find(a => a.application_id === req.params.id);
   if (!application) {
@@ -157,10 +191,15 @@ app.get("/v1/loan-applications/:id", (req, res) => {
 
 // ─────────────────────────────────────────
 // DOCUMENTS
+// Documents are linked to borrowers via borrower_id.
+// This endpoint registers document metadata only — no actual file upload occurs.
+// Supported document types: pay_stub, tax_return, bank_statement, id_verification
 // ─────────────────────────────────────────
-const documents = [];
 
-// Upload a document
+// Register a document
+// Validates that borrower_id, document_type, and file_name are all present.
+// Verifies that the borrower_id exists — returns 404 if not found.
+// Returns 201 with the new document object including generated document_id.
 app.post("/v1/documents", (req, res) => {
   const { borrower_id, document_type, file_name } = req.body;
 
@@ -193,6 +232,8 @@ app.post("/v1/documents", (req, res) => {
 });
 
 // Get all documents for a borrower
+// Requires borrower_id as a query parameter — returns 400 if missing.
+// Returns all documents registered for the specified borrower.
 app.get("/v1/documents", (req, res) => {
   const { borrower_id } = req.query;
   if (!borrower_id) {
@@ -207,9 +248,19 @@ app.get("/v1/documents", (req, res) => {
 
 // ─────────────────────────────────────────
 // LOAN STATUS
+// Updates the status of an existing loan application.
+// Valid status values: submitted, under_review, approved, rejected
+// Status transitions follow a strict state machine:
+//   submitted    → under_review, rejected
+//   under_review → approved, rejected
+//   approved     → no further transitions
+//   rejected     → no further transitions
 // ─────────────────────────────────────────
 
 // Update loan application status
+// Validates that status is present and is one of the accepted values.
+// Returns 404 if the application_id does not exist.
+// Returns 200 with the updated application object including updated_at timestamp.
 app.patch("/v1/loan-applications/:id/status", (req, res) => {
   const { status } = req.body;
   const validStatuses = ["submitted", "under_review", "approved", "rejected"];
@@ -236,6 +287,8 @@ app.patch("/v1/loan-applications/:id/status", (req, res) => {
 
 // ─────────────────────────────────────────
 // START SERVER
+// Uses PORT environment variable if set — falls back to 3000 for local development.
+// Render.com sets PORT automatically on deployment.
 // ─────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
