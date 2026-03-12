@@ -32,6 +32,7 @@ Already familiar with REST APIs? Import the Postman collection and start testing
 | [Error Handling](docs/errors.md) | Error codes, response structure, validation errors |
 | [Glossary](docs/glossary.md) | Fintech and API terminology |
 | [Architecture](docs/architecture.md) | API architecture, data relationships, and loan status workflow |
+| [Code Examples](docs/code-examples.md) | cURL, Python, and JavaScript examples for every endpoint |
 | [OpenAPI Spec](openapi.yaml) | Machine-readable API specification — import into Swagger UI or Postman |
 
 ---
