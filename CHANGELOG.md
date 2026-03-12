@@ -3,6 +3,17 @@
 All notable changes to the Loan Processing API are documented here.
 
 ---
+## [v1.3.0] — 2026-03-12
+
+### Added
+- OpenAPI spec — machine-readable API definition for all 9 endpoints
+- Interactive Swagger UI link in README
+- Code examples in Python and JavaScript for all 9 endpoints
+- Style guide — naming conventions, writing rules, and formatting standards
+- Tutorial — complete loan workflow walkthrough
+- Architecture diagrams — API flow, data relationships, loan status workflow
+
+---
 
 ## [v1.2.0] — 2026-03-11
 
