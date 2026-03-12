@@ -17,7 +17,7 @@ New to the API? Start here:
 Already familiar with REST APIs? Import the Postman collection and start testing immediately:
 
 → [Download Postman Collection](loan-processing-api.postman_collection.json)
-→ [View OpenAPI Spec](openapi.yaml) — import into [Swagger Editor](https://editor.swagger.io) to explore the full interactive API reference
+→ [Interactive API Reference](https://editor.swagger.io/?url=https://raw.githubusercontent.com/writingteacher/loan-processing-api/master/openapi.yaml) — open in Swagger Editor
 
 ---
 
