@@ -17,6 +17,7 @@ New to the API? Start here:
 Already familiar with REST APIs? Import the Postman collection and start testing immediately:
 
 → [Download Postman Collection](loan-processing-api.postman_collection.json)
+→ [View OpenAPI Spec](openapi.yaml) — import into [Swagger Editor](https://editor.swagger.io) to explore the full interactive API reference
 
 ---
 
@@ -31,6 +32,7 @@ Already familiar with REST APIs? Import the Postman collection and start testing
 | [Error Handling](docs/errors.md) | Error codes, response structure, validation errors |
 | [Glossary](docs/glossary.md) | Fintech and API terminology |
 | [Architecture](docs/architecture.md) | API architecture, data relationships, and loan status workflow |
+| [OpenAPI Spec](openapi.yaml) | Machine-readable API specification — import into Swagger UI or Postman |
 
 ---
 
